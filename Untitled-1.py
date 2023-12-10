@@ -101,17 +101,14 @@ class Training:
                 verbose = self.params['verbose'],
                 callbacks = [DVCLiveCallback(live = live)]
             )
-
-        return self
-
-    def save_model(self):
-        pathlib.Path(self.model_filepath).unlink(missing_ok=True)
-        self.model.save(self.model_filepath)
+            pathlib.Path(self.model_filepath).unlink(missing_ok=True)
+            self.model.save(self.model_filepath)
         
-        # Log do modelo como um artefato no dvclive
-        Live.log_artifact(path="./model.keras", type="model")
+            # Log do modelo como um artefato no dvclive
+            live.log_artifact(path=self.model_filepath, type="model")
 
         return self
+
 
 def main():
     params = {
@@ -124,7 +121,7 @@ def main():
         "model_filepath": "./model.keras",
     }
 
-    Training(params).build_model().train_track().save_model()
+    Training(params).build_model().train_track()
 
 
 if __name__ == '__main__':
