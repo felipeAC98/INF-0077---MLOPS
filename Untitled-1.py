@@ -3,7 +3,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from dvclive import Live 
 from dvclive.keras import DVCLiveCallback
 import pathlib
-
+from dvc.api import params_show
 
 class Training:    
     def __init__(self, params):
@@ -74,7 +74,7 @@ class Training:
         )
         return train_ds, val_ds
 
-    def _train(self):
+    def train(self):
         train_ds, val_ds = self.load_ds()
 
         self.model.fit(
@@ -94,29 +94,25 @@ class Training:
         with Live() as live:
             self.model.fit(
                 train_ds,
-                validation_data = val_ds,
+                steps_per_epoch=train_ds.samples // self.batch_size,
+                validation_data=val_ds,
+                validation_steps=val_ds.samples // self.batch_size,
+                epochs=self.params['epochs'],
+                verbose=self.params['verbose'],
                 callbacks = [DVCLiveCallback(live = live)]
             )
+                
             pathlib.Path(self.model_filepath).unlink(missing_ok=True)
             self.model.save(self.model_filepath)
-        
+
             # Log do modelo como um artefato no dvclive
             live.log_artifact(path=self.model_filepath, type="model")
-
+            
         return self
 
-
 def main():
-    params = {
-        "input_height": 224,
-        "input_width": 224,
-        "input_channels": 3,
-        "batch_size": 64,
-        "epochs": 3,
-        "verbose": 1,
-        "model_filepath": "./model.keras",
-    }
-
+    params = params_show()
+    print(params)
     Training(params).build_model().train_track()
 
 
