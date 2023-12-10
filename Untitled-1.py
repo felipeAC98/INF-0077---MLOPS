@@ -74,7 +74,7 @@ class Training:
         )
         return train_ds, val_ds
 
-    def train(self):
+    def _train(self):
         train_ds, val_ds = self.load_ds()
 
         self.model.fit(
@@ -94,11 +94,7 @@ class Training:
         with Live() as live:
             self.model.fit(
                 train_ds,
-                steps_per_epoch = train_ds.samples // self.batch_size,
                 validation_data = val_ds,
-                validation_steps = val_ds.samples // self.batch_size,
-                epochs = self.params['epochs'],
-                verbose = self.params['verbose'],
                 callbacks = [DVCLiveCallback(live = live)]
             )
             pathlib.Path(self.model_filepath).unlink(missing_ok=True)
@@ -116,7 +112,7 @@ def main():
         "input_width": 224,
         "input_channels": 3,
         "batch_size": 64,
-        "epochs": 1,
+        "epochs": 3,
         "verbose": 1,
         "model_filepath": "./model.keras",
     }
