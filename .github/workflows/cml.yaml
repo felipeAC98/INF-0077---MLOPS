@@ -9,14 +9,14 @@ jobs: # what it will run
     steps:
       - uses: actions/checkout@v3 # pre-built step (checkout sourcecode)
       - uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-        cache: 'pip'
+        with:
+          python-version: '3.9'
+          cache: 'pip'
       - uses: iterative/setup-dvc@v1
       - name: Train model
-      env:
-        GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-      run: | # custom commands
-        echo "Train model"
-        dvc pull 
-        dvc repro
+        env:
+          GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+        run: | # custom commands
+          echo "Train model"
+          dvc pull 
+          dvc repro
